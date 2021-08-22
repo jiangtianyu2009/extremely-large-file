@@ -12,15 +12,13 @@ int main()
 	start = clock();
 
 	// 创建文件对象
-	HANDLE hFile1 = CreateFile(TEXT("D:\\data.dat"), GENERIC_READ | GENERIC_WRITE,
-		0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile1 = CreateFile(TEXT("D:\\data1.dat"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile1 == INVALID_HANDLE_VALUE)
 	{
 		cout << "创建文件1对象失败，错误代码：" << GetLastError() << endl;
 		return 0;
 	}
-	HANDLE hFile2 = CreateFile(TEXT("D:\\data2.dat"), GENERIC_READ | GENERIC_WRITE,
-		0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile2 = CreateFile(TEXT("D:\\data2.dat"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile2 == INVALID_HANDLE_VALUE)
 	{
 		cout << "创建文件2对象失败，错误代码：" << GetLastError() << endl;
@@ -73,9 +71,7 @@ int main()
 	while (qwFileSize > 0)
 	{
 		// 映射视图
-		LPBYTE lpbMapAddress = (LPBYTE)MapViewOfFile(hFileMap1, FILE_MAP_ALL_ACCESS,
-			(DWORD)(qwFileOffset >> 32), (DWORD)(qwFileOffset & 0xFFFFFFFF),
-			dwBlockBytes);
+		LPBYTE lpbMapAddress = (LPBYTE)MapViewOfFile(hFileMap1, FILE_MAP_ALL_ACCESS, (DWORD)(qwFileOffset >> 32), (DWORD)(qwFileOffset & 0xFFFFFFFF), dwBlockBytes);
 		if (lpbMapAddress == NULL)
 		{
 			cout << "map文件对象失败，错误代码：" << GetLastError() << endl;
@@ -97,16 +93,9 @@ int main()
 
 
 	// 创建文件内核对象，其句柄保存于hFile
-	HANDLE hFile = CreateFile(TEXT("D:\\data.dat"),
-		GENERIC_WRITE | GENERIC_READ,
-		FILE_SHARE_READ,
-		NULL,
-		CREATE_ALWAYS,
-		FILE_FLAG_SEQUENTIAL_SCAN,
-		NULL);
+	HANDLE hFile = CreateFile(TEXT("D:\\data.dat"), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	// 创建文件映射内核对象，句柄保存于hFileMapping
-	HANDLE hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE,
-		0, 0x4000000, NULL);
+	HANDLE hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0x4000000, NULL);
 	// 释放文件内核对象
 	CloseHandle(hFile);
 
@@ -114,31 +103,16 @@ int main()
 	__int64 qwFileOffset = 0;
 	DWORD dwBytesInBlock = 1000 * SysInfo.dwAllocationGranularity;
 	// 将文件数据映射到进程的地址空间
-	PBYTE pbFile = (PBYTE)MapViewOfFile(hFileMapping,
-		FILE_MAP_ALL_ACCESS,
-		(DWORD)(qwFileOffset >> 32), (DWORD)(qwFileOffset & 0xFFFFFFFF), dwBytesInBlock);
+	PBYTE pbFile = (PBYTE)MapViewOfFile(hFileMapping, FILE_MAP_ALL_ACCESS, (DWORD)(qwFileOffset >> 32), (DWORD)(qwFileOffset & 0xFFFFFFFF), dwBytesInBlock);
 
 	// 创建另外一个文件内核对象
-	HANDLE hFile2 = CreateFile(TEXT("D:\\data.dat"),
-		GENERIC_WRITE | GENERIC_READ,
-		FILE_SHARE_READ,
-		NULL,
-		CREATE_ALWAYS,
-		FILE_FLAG_SEQUENTIAL_SCAN,
-		NULL);
+	HANDLE hFile2 = CreateFile(TEXT("D:\\data.dat"), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	// 以实际数据长度创建另外一个文件映射内核对象
-	HANDLE hFileMapping2 = CreateFileMapping(hFile2,
-		NULL,
-		PAGE_READWRITE,
-		0,
-		(DWORD)(qwFileOffset & 0xFFFFFFFF),
-		NULL);
+	HANDLE hFileMapping2 = CreateFileMapping(hFile2, NULL, PAGE_READWRITE, 0, (DWORD)(qwFileOffset & 0xFFFFFFFF), NULL);
 	// 关闭文件内核对象
 	CloseHandle(hFile2);
 	// 将文件数据映射到进程的地址空间
-	PBYTE pbFile2 = (PBYTE)MapViewOfFile(hFileMapping2,
-		FILE_MAP_ALL_ACCESS,
-		0, 0, qwFileOffset);
+	PBYTE pbFile2 = (PBYTE)MapViewOfFile(hFileMapping2, FILE_MAP_ALL_ACCESS, 0, 0, qwFileOffset);
 	// 将数据从原来的内存映射文件复制到此内存映射文件
 	memcpy(pbFile2, pbFile, qwFileOffset);
 	//从进程的地址空间撤消文件数据映像
