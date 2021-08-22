@@ -18,5 +18,8 @@
     <ClCompile Include="extremely-large-file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="extremely-large-file-copy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
