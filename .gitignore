@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# ignore target folder
+.vs/
+x64/
